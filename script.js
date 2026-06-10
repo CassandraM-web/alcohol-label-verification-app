@@ -1,3 +1,21 @@
+function previewImage(event) {
+  const container = document.getElementById("imagePreviewContainer");
+  const file = event.target.files[0];
+
+  if (!file) {
+    container.innerHTML = "<p class='placeholder'>No image uploaded yet.</p>";
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function () {
+    container.innerHTML = `<img src="${reader.result}" alt="Uploaded alcohol label preview" />`;
+  };
+
+  reader.readAsDataURL(file);
+}
+
 function analyzeLabel() {
   const text = document.getElementById("labelText").value.trim();
   const lowerText = text.toLowerCase();

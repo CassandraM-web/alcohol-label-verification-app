@@ -4,37 +4,146 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI-Powered Alcohol Label Verification App</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #1f2933;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .hero {
+      background: #0b3d60;
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .hero h1 { margin-top: 0; font-size: 32px; }
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    input[type="file"] { margin: 10px 0 15px 0; }
+    .image-preview-container {
+      border: 2px dashed #ccd6dd;
+      border-radius: 12px;
+      min-height: 180px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f9fafb;
+      margin-top: 10px;
+    }
+    .image-preview-container img {
+      max-width: 100%;
+      max-height: 350px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+    .placeholder { color: #6b7280; }
+    .note {
+      margin-top: 12px;
+      padding: 12px;
+      background: #eef6ff;
+      border-left: 4px solid #0b3d60;
+      color: #1f2933;
+    }
+    textarea {
+      width: 100%;
+      min-height: 240px;
+      padding: 14px;
+      font-size: 16px;
+      border: 1px solid #ccd6dd;
+      border-radius: 8px;
+      resize: vertical;
+    }
+    .button-row {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      background: #0b3d60;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover { background: #092f49; }
+    button.secondary {
+      background: #e5e7eb;
+      color: #1f2933;
+    }
+    button.secondary:hover { background: #d1d5db; }
+    .summary {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .summary.pass { background: #dcfce7; color: #166534; }
+    .summary.review { background: #fef3c7; color: #92400e; }
+    .summary.fail { background: #fee2e2; color: #991b1b; }
+    .summary.neutral { background: #e5e7eb; color: #374151; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 12px;
+      text-align: left;
+    }
+    th { background: #f9fafb; }
+    .status-found { color: #166534; font-weight: bold; }
+    .status-missing { color: #991b1b; font-weight: bold; }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 24px; }
+      table { font-size: 14px; }
+    }
+  </style>
 </head>
 <body>
   <main class="container">
     <section class="hero">
       <h1>AI-Powered Alcohol Label Verification App</h1>
-      <p>
-        A standalone prototype that helps compliance reviewers check alcohol label text
-        against common TTB label requirements.
-      </p>
+      <p>A standalone prototype that helps compliance reviewers check alcohol label text and label images against common TTB label review needs.</p>
     </section>
 
     <section class="card">
-      <h2>Label Text Input</h2>
+      <h2>1. Upload Label Image</h2>
+      <p>Upload a label image to preview the artwork during review. This prototype displays the image for reviewer reference while text verification is completed below.</p>
+      <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(event)" />
+      <div id="imagePreviewContainer" class="image-preview-container">
+        <p class="placeholder">No image uploaded yet.</p>
+      </div>
+      <p class="note">Prototype note: Image OCR is listed as a future enhancement. This version focuses on fast, reliable text-based verification while still supporting the reviewer image workflow.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. Label Text Input</h2>
       <p>Paste alcohol label text below or load the sample label.</p>
-
       <textarea id="labelText" placeholder="Paste label text here..."></textarea>
-
       <div class="button-row">
-        <button onclick="analyzeLabel()">Analyze Label</button>
         <button class="secondary" onclick="loadSample()">Load Sample</button>
+        <button onclick="analyzeLabel()">Analyze Label</button>
         <button class="secondary" onclick="clearForm()">Clear</button>
       </div>
     </section>
 
     <section class="card">
-      <h2>Verification Results</h2>
-      <div id="summary" class="summary neutral">
-        Enter label text and select Analyze Label.
-      </div>
-
+      <h2>3. Verification Results</h2>
+      <div id="summary" class="summary neutral">Enter label text and select Analyze Label.</div>
       <table>
         <thead>
           <tr>
@@ -44,22 +153,142 @@
           </tr>
         </thead>
         <tbody id="resultsTable">
-          <tr>
-            <td colspan="3">No results yet.</td>
-          </tr>
+          <tr><td colspan="3">No results yet.</td></tr>
         </tbody>
       </table>
     </section>
 
     <section class="card">
-      <h2>Prototype Notes</h2>
-      <p>
-        This prototype uses rule-based AI-assisted text analysis. It is designed to be fast,
-        clear, and easy for compliance reviewers to use.
-      </p>
+      <h2>Reviewer Decision Support</h2>
+      <p>This tool is intended to support compliance reviewers by flagging missing or questionable label elements. It does not replace human judgment or final legal compliance review.</p>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    function previewImage(event) {
+      const container = document.getElementById("imagePreviewContainer");
+      const file = event.target.files[0];
+      if (!file) {
+        container.innerHTML = "<p class='placeholder'>No image uploaded yet.</p>";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function () {
+        container.innerHTML = `<img src="${reader.result}" alt="Uploaded alcohol label preview" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function analyzeLabel() {
+      const text = document.getElementById("labelText").value.trim();
+      const lowerText = text.toLowerCase();
+
+      if (!text) {
+        updateSummary("Please enter label text before analyzing.", "fail");
+        document.getElementById("resultsTable").innerHTML = "<tr><td colspan='3'>No label text entered.</td></tr>";
+        return;
+      }
+
+      const checks = [
+        {
+          requirement: "Brand Name",
+          found: lowerText.includes("brand") || lowerText.includes("distillery") || lowerText.includes("brewery") || lowerText.includes("winery"),
+          notes: "Checks for brand or producer identity."
+        },
+        {
+          requirement: "Class/Type Designation",
+          found: lowerText.includes("bourbon") || lowerText.includes("whiskey") || lowerText.includes("vodka") || lowerText.includes("rum") || lowerText.includes("gin") || lowerText.includes("beer") || lowerText.includes("wine") || lowerText.includes("tequila"),
+          notes: "Checks for common alcohol class/type terms."
+        },
+        {
+          requirement: "Alcohol Content",
+          found: lowerText.includes("alc") || lowerText.includes("abv") || lowerText.includes("proof") || lowerText.includes("%"),
+          notes: "Checks for ABV, alcohol percentage, or proof."
+        },
+        {
+          requirement: "Net Contents",
+          found: lowerText.includes("ml") || lowerText.includes("liter") || lowerText.includes("litre") || lowerText.includes("750") || lowerText.includes("1 l"),
+          notes: "Checks for bottle size or volume."
+        },
+        {
+          requirement: "Bottler/Producer Information",
+          found: lowerText.includes("bottled by") || lowerText.includes("produced by") || lowerText.includes("distilled by") || lowerText.includes("brewed by") || lowerText.includes("imported by"),
+          notes: "Checks for responsible company language."
+        },
+        {
+          requirement: "Government Health Warning",
+          found: lowerText.includes("government warning") && lowerText.includes("surgeon general") && lowerText.includes("pregnancy") && lowerText.includes("drive a car") && lowerText.includes("health problems"),
+          notes: "Checks for key parts of the required warning statement."
+        },
+        {
+          requirement: "Government Warning Formatting",
+          found: text.includes("GOVERNMENT WARNING:"),
+          notes: "Checks whether GOVERNMENT WARNING appears in all caps."
+        }
+      ];
+
+      renderResults(checks);
+    }
+
+    function renderResults(checks) {
+      const foundCount = checks.filter((check) => check.found).length;
+      const totalCount = checks.length;
+
+      let finalStatus = "";
+      let summaryClass = "";
+
+      if (foundCount === totalCount) {
+        finalStatus = "PASS: All core TTB label elements were detected.";
+        summaryClass = "pass";
+      } else if (foundCount >= 4) {
+        finalStatus = "NEEDS REVIEW: Some required TTB label elements were detected, but one or more items may be missing.";
+        summaryClass = "review";
+      } else {
+        finalStatus = "LIKELY INCOMPLETE: Multiple required TTB label elements appear to be missing.";
+        summaryClass = "fail";
+      }
+
+      updateSummary(finalStatus, summaryClass);
+
+      const tableRows = checks.map((check) => {
+        const statusText = check.found ? "Found" : "Missing / Needs Review";
+        const statusClass = check.found ? "status-found" : "status-missing";
+        return `
+          <tr>
+            <td>${check.requirement}</td>
+            <td class="${statusClass}">${statusText}</td>
+            <td>${check.notes}</td>
+          </tr>
+        `;
+      }).join("");
+
+      document.getElementById("resultsTable").innerHTML = tableRows;
+    }
+
+    function updateSummary(message, className) {
+      const summary = document.getElementById("summary");
+      summary.textContent = message;
+      summary.className = `summary ${className}`;
+    }
+
+    function loadSample() {
+      const sampleText = `Brand Name: OLD TOM DISTILLERY
+Class/Type: Kentucky Straight Bourbon Whiskey
+Alcohol Content: 45% Alc./Vol. (90 Proof)
+Net Contents: 750 mL
+Bottled by Old Tom Distillery, Louisville, KY
+Country of Origin: United States
+
+GOVERNMENT WARNING: According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.`;
+
+      document.getElementById("labelText").value = sampleText;
+    }
+
+    function clearForm() {
+      document.getElementById("labelText").value = "";
+      updateSummary("Enter label text and select Analyze Label.", "neutral");
+      document.getElementById("resultsTable").innerHTML = "<tr><td colspan='3'>No results yet.</td></tr>";
+    }
+  </script>
 </body>
 </html>
