@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Powered Alcohol Label Verification App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <h1>AI-Powered Alcohol Label Verification App</h1>
+      <p>
+        A standalone prototype that helps compliance reviewers check alcohol label text
+        against common TTB label requirements.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Label Text Input</h2>
+      <p>Paste alcohol label text below or load the sample label.</p>
+
+      <textarea id="labelText" placeholder="Paste label text here..."></textarea>
+
+      <div class="button-row">
+        <button onclick="analyzeLabel()">Analyze Label</button>
+        <button class="secondary" onclick="loadSample()">Load Sample</button>
+        <button class="secondary" onclick="clearForm()">Clear</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Verification Results</h2>
+      <div id="summary" class="summary neutral">
+        Enter label text and select Analyze Label.
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Requirement</th>
+            <th>Status</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTable">
+          <tr>
+            <td colspan="3">No results yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Prototype Notes</h2>
+      <p>
+        This prototype uses rule-based AI-assisted text analysis. It is designed to be fast,
+        clear, and easy for compliance reviewers to use.
+      </p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
